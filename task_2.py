@@ -12,9 +12,8 @@ class Name(Field):
 
 class Phone(Field):
     def __init__(self, value):
-        # Validate phone number format
-        if len(value) != 10 or not value.isdigit():
-            raise ValueError("Phone number must be 10 digits")
+        if not value.isdigit() or len(value) != 10:
+            raise ValueError("Phone number must be 10 digits.")
         super().__init__(value)
 
 
@@ -23,25 +22,21 @@ class Record:
         self.name = Name(name)
         self.phones = []
 
-    def add_phone(self, phone):
-        self.phones.append(Phone(phone))
+    def add_phone(self, phone_number):
+        self.phones.append(Phone(phone_number))
 
-    def remove_phone(self, phone):
-        for p in self.phones:
-            if p.value == phone:
-                self.phones.remove(p)
-                break
+    def remove_phone(self, phone_number):
+        self.phones = [phone for phone in self.phones if str(phone) != phone_number]
 
-    def edit_phone(self, old_phone, new_phone):
-        for p in self.phones:
-            if p.value == old_phone:
-                p.value = new_phone
-                break
+    def edit_phone(self, old_phone_number, new_phone_number):
+        for i, phone in enumerate(self.phones):
+            if str(phone) == old_phone_number:
+                self.phones[i] = Phone(new_phone_number)
 
-    def find_phone(self, phone):
-        for p in self.phones:
-            if p.value == phone:
-                return p
+    def find_phone(self, phone_number):
+        for phone in self.phones:
+            if str(phone) == phone_number:
+                return phone
         return None
 
     def __str__(self):
@@ -87,18 +82,14 @@ if __name__ == "__main__":
 
     # Find and edit a phone number for John
     john = book.find("John")
-    if john:
-        john.edit_phone("1234567890", "1112223333")
+    john.edit_phone("1234567890", "1112223333")
 
     print(john)  # Displaying: Contact name: John, phones: 1112223333; 5555555555
 
     # Searching for a specific phone number in John's entry
-    if john:
-        found_phone = john.find_phone("5555555555")
-        if found_phone:
-            print(f"{john.name}: {found_phone}")
-        else:
-            print("Phone number not found")
+    found_phone = john.find_phone("5555555555")
+    print(f"{john.name}: {found_phone}")
+    # Deletion: 5555555555
 
     # Deletion Jane's entry
     book.delete("Jane")
