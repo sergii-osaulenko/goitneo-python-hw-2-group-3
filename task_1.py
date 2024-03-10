@@ -1,24 +1,15 @@
 def input_error(func):
-    def inner(*args):
+    def inner(*args, **kwargs):
         try:
-            return func(*args)
-        except KeyError:
-            return "Contact not found."
+            return func(*args, **kwargs)
         except ValueError:
-            return "Invalid input format."
-        except IndexError:
-            return "Insufficient arguments."
+            return "Give me name and phone please."
     return inner
-
-def parse_input(user_input):
-    cmd, *args = user_input.split()
-    cmd = cmd.strip().lower()
-    return cmd, args
 
 @input_error
 def add_contact(args, contacts):
     if len(args) != 2:
-        raise ValueError
+        raise ValueError("Invalid command. Format: add [name] [phone number]")
     name, phone = args
     contacts[name] = phone
     return "Contact added."
@@ -26,26 +17,25 @@ def add_contact(args, contacts):
 @input_error
 def change_contact(args, contacts):
     if len(args) != 2:
-        raise ValueError
+        raise ValueError("Invalid command. Format: change [name] [new phone number]")
     name, phone = args
     if name in contacts:
         contacts[name] = phone
         return "Contact updated."
     else:
-        raise KeyError
+        return "Contact not found."
 
 @input_error
 def show_phone(args, contacts):
     if len(args) != 1:
-        raise ValueError
+        raise ValueError("Invalid command. Format: phone [name]")
     name = args[0]
-    return contacts[name]
+    return contacts.get(name, "Contact not found.")
 
 def show_all(contacts):
     if not contacts:
         return "No contacts found."
-    else:
-        return "\n".join([f"{name}: {phone}" for name, phone in contacts.items()])
+    return "\n".join([f"{name}: {phone}" for name, phone in contacts.items()])
 
 def main():
     contacts = {}
